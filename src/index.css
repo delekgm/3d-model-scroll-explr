@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "Regular";
+  src: url("/fonts/regular.otf");
+}
+
+@font-face {
+  font-family: "Medium";
+  src: url("/fonts/medium.otf");
+}
+
+@font-face {
+  font-family: "SemiBold";
+  src: url("/fonts/semibold.otf");
+}
+
+@font-face {
+  font-family: "Bold";
+  src: url("/fonts/bold.otf");
+}
+
+@theme {
+  --font-regular: "Regular";
+  --font-medium: "Medium";
+  --font-semibold: "SemiBold";
+  --font-bold: "Bold";
+  --color-primary: #0071e3;
+  --color-dark-50: #bdbdbd;
+  --color-dark-100: #86868b;
+  --color-dark-200: #2e2e30;
+  --color-light-100: #adb5bd;
+  --color-black: #000000;
+}
+
+html {
+  width: 100vw;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  body {
+    position: relative; /* ensures correct stacking for ::before */
+  }
+
+  body::before {
+    --size: 45px;
+    --line: color-mix(in hsl, white, transparent 80%);
+    content: "";
+    position: fixed;
+    inset: 0;
+    height: 100vh;
+    width: 100vw;
+
+    /* Grid lines */
+    background:
+      linear-gradient(90deg, var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size),
+      linear-gradient(var(--line) 1px, transparent 1px var(--size)) 50% 50% / var(--size) var(--size);
+
+    /* Fade IN from top-left → fully visible mid-screen → fade OUT at bottom-left */
+    mask: linear-gradient(
+      0deg,
+      transparent 0%,
+      white 50%,
+      white 50%,
+      transparent 100%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 0%,
+      white 50%,
+      transparent 100%
+    );
+
+    mask-composite: intersect;
+    -webkit-mask:
+      linear-gradient(0deg, transparent 0%, white 50%, white 50%, transparent 100%),
+      linear-gradient(45deg, transparent 0%, white 20%, transparent 70%);
+    -webkit-mask-composite: source-in;
+
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+body {
+  width: 100vw;
+  overflow-x: hidden;
+  background-color: #000;
+  color: var(--color-dark-100);
+  font-family: var(--font-semibold);
+}
+
+
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
+
+@utility flex-between {
+  @apply flex items-center justify-between;
+}
+
+@utility col-center {
+  @apply flex flex-col items-center justify-center;
+}
+
+@utility abs-center {
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+}
+
+@utility h3-semibold {
+  @apply font-semibold text-xl text-dark-100;
+}
+
+@utility base-semibold {
+  @apply font-semibold text-base text-dark-50;
+}
+
+@utility h3-regular {
+  @apply font-regular text-xl text-dark-50;
+}
+
+@utility base-regular {
+  @apply font-regular text-base text-dark-50;
+}
+
+@utility small-medium {
+  @apply font-medium text-xs;
+}
+
+@layer components {
+
+  header {
+    @apply w-screen fixed top-0 left-0 z-50 flex-center bg-black min-h-[7vh];
+
+    background: transparent;
+    isolation: isolate;
+
+    h1 {
+      @apply font-semibold text-xl lg:text-2xl text-white;
+    }
+
+    nav {
+      @apply container mx-auto flex-between px-5 2xl:px-0;
+
+      img {
+        @apply cursor-pointer hover:-translate-y-0.5 transition-all duration-300 ease-in-out;
+
+        button {
+          @apply bg-transparent border-none outline-none cursor-pointer;
+        }
+      }
+
+      ul {
+        @apply flex-center gap-8;
+
+        a {
+          @apply hidden md:block text-white opacity-80 font-regular text-sm cursor-pointer hover:opacity-100 transition-all duration-300 ease-in-out;
+        }
+      }
+    }
+  }
+
+  /* Viewport overlay: black at top → transparent by 10vh */
+  header::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 10vh;                 /* fade depth you asked for */
+    pointer-events: none;
+    z-index: -1;                  /* behind header content (thanks to isolation) */
+    background: linear-gradient(
+      to bottom,
+      rgba(0,0,0,1.00) 0%,
+      rgba(0,0,0,0.00) 100%
+    );
+    /* The actual blur */
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    /* FEATHER the bottom edge so there's no hard cutoff */
+    mask-image: linear-gradient(to bottom,
+      black 0%,
+      black 80%,          /* fully visible until ~60% of the overlay */
+      transparent 100%    /* fades out to 0 alpha by the bottom */
+    );
+    -webkit-mask-image: linear-gradient(to bottom,
+      black 0%,
+      black 80%,
+      transparent 100%
+    );
+  }
+
+  #features {
+    @apply pt-[10vh] relative;
+
+    h1 {
+      @apply font-semibold text-white text-5xl md:text-7xl text-center max-w-3xl mx-auto;
+    }
+
+    h2 {
+      @apply font-semibold text-white text-3xl lg:text-7xl text-center max-w-3xl mx-auto;
+    }
+
+    #f-canvas {
+      @apply !w-full !h-dvh relative;
+    }
+
+    .box {
+      @apply max-w-[120px] md:max-w-xs absolute;
+
+      p {
+        @apply lg:h3-regular base-regular;
+      }
+      
+      span {
+        @apply lg:h3-semibold base-semibold
+      }
+    }
+  }
+
+  footer {
+    @apply container mx-auto py-7 max-lg:px-5;
+
+    .info {
+      @apply flex-between;
+
+      p {
+        @apply text-sm font-medium;
+
+        span {
+          @apply text-primary mx-0.5;
+        }
+      }
+    }
+
+    hr {
+      @apply my-7 text-[#424245];
+    }
+  }
+}
